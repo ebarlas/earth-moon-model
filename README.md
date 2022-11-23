@@ -40,7 +40,7 @@ Tests were conducted by activating the stepper motors one at a time via a simple
 Python REPL.
 
 ```python
-import from adafruit_motorkit import MotorKit
+from adafruit_motorkit import MotorKit
 kit = MotorKit()
 kit.stepper1.onestep() # engage 1st motor
 kit.stepper2.onestep() # engage 2nd motor
