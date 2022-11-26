@@ -13,9 +13,9 @@ The image on the right illustrates the perspective of the EMM observer.
 The observer follows the Earth as it travels around the Sun, with the Sun always
 due west of the observer.
 
-| Model | Model Perspective               |
-|----------------|---------------------------------|
-| ![](img/earth-moon-model-annotated.png) | ![](img/earth-model-camera.png) |
+| Model | Model Perspective                 |
+|----------------|-----------------------------------|
+| ![](img/earth-moon-model-annotated.png) | ![](img/earth-model-camera-2.png) |
 
 ## Parts
 
