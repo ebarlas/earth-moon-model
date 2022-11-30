@@ -26,6 +26,43 @@ due west of the observer.
 * Tiny round disk magnet (x3)
 * 5V 2A power supply
 
+## Software
+
+EMM is running on a Raspberry Pi Zero W with [DietPi OS](https://dietpi.com/docs/).
+DietPi is a highly optimized and minimal Debian-based Linux distribution.
+
+At the time of this writing, DietPi version `8.9.2` is installed. It runs atop Linux kernel version `5.15`.
+
+```
+# uname -a
+Linux DietPi 5.15.61+ #1579 Fri Aug 26 11:08:59 BST 2022 armv6l GNU/Linux
+```
+
+Python3 is required.
+
+```
+apt-get install python3
+apt-get install python3-pip
+```
+
+The following Python package dependencies are required:
+
+* [`skyfield`](https://rhodesmill.org/skyfield/) - library for calculating astronomical predictions
+* [`adafruit_motorkit`](https://github.com/adafruit/Adafruit_CircuitPython_MotorKit) - library for controlling stepper motors
+* [`RPi.GPIO`](https://pypi.org/project/RPi.GPIO) - library for interacting with Raspberry Pi GPIO pins
+
+```
+pip3 install skyfield
+pip3 install adafruit-circuitpython-motorkit
+pip3 install RPi.GPIO
+```
+
+The following was also necessary with my setup. See https://github.com/numpy/numpy/issues/14553.
+
+```
+apt-get install libatlas-base-dev
+```
+
 ## Assembly
 
 ## Current Draw
