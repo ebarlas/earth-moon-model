@@ -4,6 +4,9 @@ Earth Moon Model (EMM) is a tabletop digital art project that combines a Raspber
 computer with sensors and actuators to create a realistic model of the Earth and
 the Moon in their orbits.
 
+This project is an extension to [Earth Model](https://github.com/ebarlas/earth-model), 
+which has a much simpler footprint that lacks a moon. 
+
 ## Design
 
 The image on the left is a rendering of EMM. The design source is
