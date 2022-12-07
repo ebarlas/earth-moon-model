@@ -65,6 +65,18 @@ apt-get install libatlas-base-dev
 
 ## Assembly
 
+A small amount of soldering is required to assemble the components.
+
+Neither the Raspberry Pi Zero W nor the Adafruit Stepper Motor HAT
+have header pins pre-installed. The first step in preparing the electronics is
+to solder those headers to allow basic connectivity.
+
+* Solder male pin headers to Raspberry Pi Zero W
+* Solder stacking headers to lower Stepper Motor HAT
+* Solder female pin headers to upper Stepper Motor HAT
+* Solder terminal blocks to lower Stepper Motor HAT
+* Solder terminal blocks to upper Stepper Motor HAT
+
 ## Current Draw
 
 The Raspberry Pi Zero W alone draws about 113 mA of current.
