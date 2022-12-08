@@ -80,7 +80,7 @@ to solder those headers to allow basic connectivity.
 * Solder terminal blocks to lower Stepper Motor HAT
 * Solder terminal blocks to upper Stepper Motor HAT
 
-| Side                    | Top                     |
+|                         |                         |
 |-------------------------|-------------------------|
 | ![](img/assembly_1.jpg) | ![](img/assembly_2.jpg) |
 
@@ -132,3 +132,13 @@ kit2.stepper1.onestep() # engage 3rd motor
   * Moves motor shafts to reference positions
   * Moves motor shafts to target position based on earth and moon positions
   * Check positions minutely, moving motor shafts as needed 
+
+## Wood Working
+
+The incredible Lance Barlas constructed wood components based on the 3D model above.
+
+|                             |                             |
+|-----------------------------|-----------------------------|
+| ![](img/wood_arm_1.jpg)     | ![](img/wood_arm_2.jpg)     |
+| ![](img/wood_support_1.jpg) | ![](img/wood_support_2.jpg) |
+| ![](img/wood_support_3.jpg) | ![](img/wood_support_4.jpg) |
