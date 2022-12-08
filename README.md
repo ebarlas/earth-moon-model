@@ -107,3 +107,28 @@ kit2.stepper1.onestep() # engage 3rd motor
 | RPi                         | 1 Motor                     | 2 Motors                    | 3 Motors                    |
 |-----------------------------|-----------------------------|-----------------------------|-----------------------------|
 | ![](img/current_draw_1.jpg) | ![](img/current_draw_2.jpg) | ![](img/current_draw_3.jpg) | ![](img/current_draw_4.jpg) |
+
+## Modules
+
+`earth.py`
+* Uses `skyfield` library to calculate earth orbit, earth rotation, and moon orbit given a point in time
+* Earth orbit ranges from -180 to 180 to reflect the half turn of the lower motor shaft in either direction
+* Earth rotation ranges from 0 to 360
+* Moon orbit ranges from 0 to 360
+* Test module `earth_test.py`
+
+`hall_effect.py`
+* Uses `RPi.GPIO` library to yield a sensor signal `True` or `False`
+
+`controller.py`
+* Uses sensor input to orient motor shafts to reference positions
+* Implements a simple scan algorithm to discover sensor region and to move to the midpoint
+* Test module `controller_test.py`
+
+`earth_model.py`
+* Main application entry point
+* Utilizes modules above
+* Does the following:
+  * Moves motor shafts to reference positions
+  * Moves motor shafts to target position based on earth and moon positions
+  * Check positions minutely, moving motor shafts as needed 
