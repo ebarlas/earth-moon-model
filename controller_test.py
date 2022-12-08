@@ -9,12 +9,7 @@ class MotorAssembly:
         self.sensor_range = sensor_range
 
     def onestep(self, direction):
-        unit = 1 if direction == 1 else -1
-        self.degrees += unit
-        if self.degrees > 360:
-            self.degrees -= 360
-        if self.degrees < 0:
-            self.degrees += 360
+        self.degrees += 1 if direction == 1 else -1
 
     def sensing(self):
         return self.sensor_range[0] <= self.degrees <= self.sensor_range[1]
@@ -45,7 +40,6 @@ class TestController(unittest.TestCase):
     def test_scan_sensing_region_too_large(self):
         ma = MotorAssembly(100, (0, 200))
         status, steps = controller.scan(True, ma, ma, 50, 50, 0)
-        print(steps)
         self.assertFalse(status)
         self.assertEqual(1, len(steps))
         self.assertEqual(-50, steps[0])  # sensing region not departed after max 50 steps
