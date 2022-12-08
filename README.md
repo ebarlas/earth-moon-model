@@ -80,6 +80,10 @@ to solder those headers to allow basic connectivity.
 * Solder terminal blocks to lower Stepper Motor HAT
 * Solder terminal blocks to upper Stepper Motor HAT
 
+| Side                    | Top                     |
+|-------------------------|-------------------------|
+| ![](img/assembly_1.jpg) | ![](img/assembly_2.jpg) |
+
 ## Current Draw
 
 The Raspberry Pi Zero W alone draws about 113 mA of current.
