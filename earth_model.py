@@ -22,6 +22,7 @@ ACTUAL = 0
 FLOOR = 1
 ABS = 2
 
+
 def turn_off_motors(steppers):
     for stepper in steppers:
         stepper.release()
@@ -56,8 +57,7 @@ def format_steps(steps):
 
 def wrap(steps):
     # for example, jump from 199 to 0 should result in value 1 (0 - 199) + 200
-    if steps < 0:
-        return steps + STEPS_PER_REV
+    return steps if steps >= 0 else steps + STEPS_PER_REV
 
 
 def move_to_reference_positions(steppers, sensors):
@@ -129,6 +129,8 @@ def main():
         if next_steps[EO][FLOOR] != steps[EO][FLOOR]:
             delta = next_steps[EO][FLOOR] - steps[EO][FLOOR]
             controller.take_steps(delta > 0, steppers[EO], abs(delta), SLEEP)
+            controller.take_steps(delta < 0, steppers[ER], abs(delta), SLEEP)
+            controller.take_steps(delta < 0, steppers[MO], abs(delta), SLEEP)
 
         if next_steps[ER][FLOOR] != steps[ER][FLOOR]:
             delta = wrap(next_steps[ER][FLOOR] - steps[ER][FLOOR])
