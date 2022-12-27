@@ -1,6 +1,6 @@
 import unittest
 
-import controller
+import motor
 
 
 class MotorAssembly:
@@ -9,17 +9,17 @@ class MotorAssembly:
         self.sensor_range = sensor_range
 
     def onestep(self, direction):
-        self.degrees += 1 if direction == 1 else -1
+        self.degrees += 1 if direction == 1 else -1  # 1 degree per step
 
     def sensing(self):
         return self.sensor_range[0] <= self.degrees <= self.sensor_range[1]
 
 
-class TestController(unittest.TestCase):
-
+class TestMotor(unittest.TestCase):
     def test_scan(self):
         ma = MotorAssembly(0, (60, 79))
-        status, steps = controller.scan(True, ma, ma, 100, 50, 0)
+        m = motor.Motor(ma, ma)
+        status, steps = m.scan(True, 100, 50)
         self.assertTrue(status)
         self.assertEqual(4, len(steps))
         self.assertEqual(0, steps[0])  # no initial steps needed to scan off of sensor
@@ -30,7 +30,8 @@ class TestController(unittest.TestCase):
 
     def test_scan_sensor_not_found(self):
         ma = MotorAssembly(0, (60, 79))
-        status, steps = controller.scan(True, ma, ma, 50, 50, 0)
+        m = motor.Motor(ma, ma)
+        status, steps = m.scan(True, 50, 50)
         self.assertFalse(status)
         self.assertEqual(2, len(steps))
         self.assertEqual(0, steps[0])  # no initial steps needed to scan off of sensor
@@ -39,12 +40,9 @@ class TestController(unittest.TestCase):
 
     def test_scan_sensing_region_too_large(self):
         ma = MotorAssembly(100, (0, 200))
-        status, steps = controller.scan(True, ma, ma, 50, 50, 0)
+        m = motor.Motor(ma, ma)
+        status, steps = m.scan(True, 50, 50)
         self.assertFalse(status)
         self.assertEqual(1, len(steps))
         self.assertEqual(-50, steps[0])  # sensing region not departed after max 50 steps
         self.assertEqual(50, ma.degrees)  # motor should be at 50 degrees now
-
-
-if __name__ == '__main__':
-    unittest.main()

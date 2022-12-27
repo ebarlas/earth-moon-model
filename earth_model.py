@@ -2,7 +2,7 @@ import time
 import atexit
 import hall_effect
 import earth
-import controller
+import motor
 import logging
 import logging.handlers
 from adafruit_motorkit import MotorKit
@@ -60,34 +60,34 @@ def wrap(steps):
     return steps if steps >= 0 else steps + STEPS_PER_REV
 
 
-def move_to_reference_positions(steppers, sensors):
+def move_to_reference_positions(earth_orbit, earth_rotation, moon_orbit):
     # scan clockwise to base position on lower earth orbit motor
     # when the magnet is directly over the hall effect sensor, it's winter solstice in the northern hemisphere
     # that is, the northern hemisphere is pointing away from the sun
-    success, steps = controller.scan(False, steppers[EO], sensors[EO], 100, 50, SLEEP)
+    success, steps = earth_orbit.scan(False, 100, 50)
     logger.info(f'scanned clockwise, motor=earth_orbit, success={success}, steps={format_steps(steps)}')
 
     if not success:
         # reset position by reversing the steps taken above
         total_steps = sum(steps)
-        controller.take_steps(total_steps >= 0, steppers[EO], abs(total_steps), SLEEP)
+        earth_orbit.take_steps(total_steps >= 0, abs(total_steps))
         logger.info(f'reset position, motor=earth_orbit, steps={abs(total_steps)}')
 
         # repeat procedure above in counter-clockwise direction
-        success, steps = controller.scan(True, steppers[EO], sensors[EO], 100, 50, SLEEP)
+        success, steps = earth_orbit.scan(True, 100, 50)
         logger.info(f'scanned counter-clockwise, motor=earth_orbit, success={success}, steps={format_steps(steps)}')
 
     # scan to base position on earth rotation motor
     # the prime meridian is aligned with the magnet
     # when the magnet is directly over the hall effect sensor, the prime meridian (0 degrees longitude) is also
     # directly over the sensor
-    success, steps = controller.scan(True, steppers[ER], sensors[ER], 200, 50, SLEEP)
+    success, steps = earth_rotation.scan(True, 200, 50)
     logger.info(f'scanned counter-clockwise, motor=earth_rotation, success={success}, steps={format_steps(steps)}')
 
     # scan to base position on moon orbit motor
     # new moon (on sun side of earth) aligned with the magnet
     # when the magnet is directly over the hall effect sensor, the lunar phase is new moon
-    success, steps = controller.scan(True, steppers[MO], sensors[MO], 200, 50, SLEEP)
+    success, steps = moon_orbit.scan(True, 200, 50)
     logger.info(f'scanned counter-clockwise, motor=moon_orbit, success={success}, steps={format_steps(steps)}')
 
 
@@ -97,12 +97,13 @@ def main():
     kit = MotorKit()
     kit2 = MotorKit(address=0x61)
 
-    steppers = [kit.stepper1, kit.stepper2, kit2.stepper1]
-    sensors = [hall_effect.Sensor(17), hall_effect.Sensor(27), hall_effect.Sensor(23)]
+    earth_orbit = motor.Motor(kit.stepper1, hall_effect.Sensor(17))
+    earth_rotation = motor.Motor(kit.stepper2, hall_effect.Sensor(27))
+    moon_orbit = motor.Motor(kit2.stepper1, hall_effect.Sensor(23))
 
-    atexit.register(turn_off_motors, steppers)
+    atexit.register(turn_off_motors, [earth_orbit, earth_rotation, moon_orbit])
 
-    move_to_reference_positions(steppers, sensors)
+    move_to_reference_positions(earth_orbit, earth_rotation, moon_orbit)
 
     em = earth.earth_model_now()
     degrees = [em.earth_orbit_degrees, em.earth_rotation_degrees, em.moon_orbit_degrees]
@@ -110,15 +111,15 @@ def main():
     print_earth_model(degrees, steps)
 
     # -180 to 180, with positive referring to "forward" direction (counter-clockwise when observed from above)
-    controller.take_steps(steps[EO][FLOOR] > 0, steppers[EO], steps[EO][ABS], SLEEP)
+    earth_orbit.take_steps(steps[EO][FLOOR] > 0, steps[EO][ABS])
 
     # reverse earth-orbit operation to re-reposition prime meridian at solar noon
-    controller.take_steps(steps[EO][FLOOR] < 0, steppers[ER], steps[EO][ABS], SLEEP)
-    controller.take_steps(True, steppers[ER], steps[ER][FLOOR], SLEEP)
+    earth_rotation.take_steps(steps[EO][FLOOR] < 0, steps[EO][ABS])
+    earth_rotation.take_steps(True, steps[ER][FLOOR])
 
     # reverse earth-orbit operation to re-reposition at new moon lunar phase
-    controller.take_steps(steps[EO][FLOOR] < 0, steppers[MO], steps[EO][ABS], SLEEP)
-    controller.take_steps(True, steppers[MO], steps[MO][FLOOR], SLEEP)
+    moon_orbit.take_steps(steps[EO][FLOOR] < 0, steps[EO][ABS])
+    moon_orbit.take_steps(True, steps[MO][FLOOR])
 
     while True:
         em = earth.earth_model_now()
@@ -128,17 +129,18 @@ def main():
 
         if next_steps[EO][FLOOR] != steps[EO][FLOOR]:
             delta = next_steps[EO][FLOOR] - steps[EO][FLOOR]
-            controller.take_steps(delta > 0, steppers[EO], abs(delta), SLEEP)
-            controller.take_steps(delta < 0, steppers[ER], abs(delta), SLEEP)
-            controller.take_steps(delta < 0, steppers[MO], abs(delta), SLEEP)
+            abs_delta = abs(delta)
+            earth_orbit.take_steps(delta > 0, abs_delta)
+            earth_rotation.take_steps(delta < 0, abs_delta)
+            moon_orbit.take_steps(delta < 0, abs_delta)
 
         if next_steps[ER][FLOOR] != steps[ER][FLOOR]:
             delta = wrap(next_steps[ER][FLOOR] - steps[ER][FLOOR])
-            controller.take_steps(True, steppers[ER], delta, SLEEP)
+            earth_rotation.take_steps(True, delta)
 
         if next_steps[MO][FLOOR] != steps[MO][FLOOR]:
             delta = wrap(next_steps[MO][FLOOR] - steps[MO][FLOOR])
-            controller.take_steps(True, steppers[MO], delta, SLEEP)
+            moon_orbit.take_steps(True, delta)
 
         steps = next_steps
         time.sleep(60)
