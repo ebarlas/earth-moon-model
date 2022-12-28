@@ -37,9 +37,9 @@ class EventTime:
         return '{} at {}'.format(self.event, self.time.utc_strftime('%Y-%m-%d %H:%M:%S'))
 
 
-class EarthModel:
+class Earth:
     """
-    Class composed of (1) earth orbit degrees (-180 to 180), (2) earth rotation degrees (0 to 360),
+    Class composed of (1) earth orbit degrees (0 to 360), (2) earth rotation degrees (0 to 360),
     and (3) moon orbit degrees (0 to 360).
 
     These values are intended to serve as input to a physical model with the following configuration.
@@ -56,18 +56,18 @@ class EarthModel:
 
     Consider the following examples.
     Given earth-orbit degrees of 0 and earth-rotation degrees of 0, earth remains at solar noon in Greenwich on winter solstice.
-    Given earth-orbit degrees of -90 and earth-rotation degrees of 270, earth is at solar noon in Greenwich on spring equinox.
+    Given earth-orbit degrees of 90 and earth-rotation degrees of 270, earth is at solar noon in Greenwich on spring equinox.
     Given earth-orbit degrees of 180 and earth-rotation degree of 0, earth is at nadir in Greenwich on summer solstice.
     Given earth-orbit degrees of 180 and earth-rotation degree of 90, earth is at sunrise in Greenwich on summer solstice.
     """
 
-    def __init__(self, earth_orbit_degrees, earth_rotation_degrees, moon_orbit_degrees):
-        assert -180 <= earth_orbit_degrees <= 180
-        assert 0 <= earth_rotation_degrees <= 360
-        assert 0 <= moon_orbit_degrees <= 360
-        self.earth_orbit_degrees = earth_orbit_degrees
-        self.earth_rotation_degrees = earth_rotation_degrees
-        self.moon_orbit_degrees = moon_orbit_degrees
+    def __init__(self, eo_degrees, er_degrees, mo_degrees):
+        assert 0 <= eo_degrees <= 360
+        assert 0 <= er_degrees <= 360
+        assert 0 <= mo_degrees <= 360
+        self.eo_degrees = eo_degrees
+        self.er_degrees = er_degrees
+        self.mo_degrees = mo_degrees
 
 
 def season_event_times(start, end):
@@ -126,21 +126,20 @@ def surrounding_events(time, julian_time, events_func):
 def relative_to_absolute_orbit_degrees(season, degrees):
     """
     Convert relative seasonal degrees (0 to 90) to absolute degrees on specialized scale.
-    Scale goes up from 0 to -180 between winter solstice and summer solstice
-    and from 180 to 0 between summer solstice and winter solstice.
-    Autumnal equinoxes is -90 and spring equinox is 90.
+    Scale goes from 0 to 360 from winter solstice (0), to vernal equinox (90),
+    to summer solstice (180), to autumnal equinox (270), and back to winter solstice.
     """
-    if season == EVENT_WINTER_SOLSTICE:  # 0 to -90, ex. ex 0->0, 90->-90
-        return -degrees
-    if season == EVENT_VERNAL_EQUINOX:  # -90 to -180, ex. 0->-90, 90->-180
-        return -90 - degrees
-    if season == EVENT_SUMMER_SOLSTICE:  # 180 to 90, ex. 0->180, 90->90
-        return 180 - degrees
-    return 90 - degrees # (EVENT_AUTUMNAL_EQUINOX)  # 90 to 0, ex. 0->90, 90->0
+    if season == EVENT_WINTER_SOLSTICE:  # 0 to 90
+        return degrees
+    if season == EVENT_VERNAL_EQUINOX:  # 90 to 180
+        return 90 + degrees
+    if season == EVENT_SUMMER_SOLSTICE:  # 180 to 270
+        return 180 + degrees
+    return 270 + degrees # 270 to 360
 
 
 def position_as_percent(events, time):
-    # total time separating pair of events
+    # total time separating a pair of events
     range = events[1].time - events[0].time
 
     # position within range [0, range]
@@ -153,17 +152,14 @@ def position_as_percent(events, time):
 def orbit_degrees_from_winter_solstice(time):
     """
     Computes earth orbit degrees of the input time relative to winter solstice on specialized scale.
-    Scale goes from 0 to -180 between winter solstice and summer solstice
-    and from 180 to 0 between summer solstice and winter solstice.
-    Autumnal equinoxes is -90 and spring equinox is 90.
     """
-    # determine pair of straddling season events
+    # determine a pair of straddling season events
     evts = surrounding_events(time, 100, season_event_times)
 
     # convert fractional value to seasonal degrees offset [0, 90]
     degrees = position_as_percent(evts, time) * 90
 
-    # adjust for the 180-degree spectrum, starting from winter solstice
+    # adjust (+0, +90, +180, or +270) for season
     return relative_to_absolute_orbit_degrees(evts[0].event.value, degrees)
 
 
@@ -182,25 +178,25 @@ def rotation_degrees_from_solar_noon(time):
     return degrees if evts[0].event.value else degrees + 180
 
 
-def earth_model(time):
-    earth_orbit_degrees = orbit_degrees_from_winter_solstice(time)
-    earth_rotation_degrees = rotation_degrees_from_solar_noon(time)
-    moon_orbit_degrees = almanac.moon_phase(ephemeris, time).degrees
-    return EarthModel(earth_orbit_degrees, earth_rotation_degrees, moon_orbit_degrees)
+def earth(time):
+    eo_degrees = orbit_degrees_from_winter_solstice(time)
+    er_degrees = rotation_degrees_from_solar_noon(time)
+    mo_degrees = almanac.moon_phase(ephemeris, time).degrees
+    return Earth(eo_degrees, er_degrees, mo_degrees)
 
 
-def earth_model_now():
-    return earth_model(timescale.now())
+def earth_now():
+    return earth(timescale.now())
 
 
 def main():
     now = timescale.now()
-    em = earth_model(now)
+    em = earth(now)
     d = {
         'time': now.utc_strftime('%Y-%m-%d %H:%M:%S'),
-        'earth_orbit': em.earth_orbit_degrees,
-        'earth_rotation': em.earth_rotation_degrees,
-        'moon_orbit': em.moon_orbit_degrees,
+        'earth_orbit': em.eo_degrees,
+        'earth_rotation': em.er_degrees,
+        'moon_orbit': em.mo_degrees,
     }
     print(d)
 

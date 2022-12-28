@@ -5,20 +5,37 @@ BACKWARD = 2
 
 
 class Motor:
-    def __init__(self, stepper, sensor, sleep=0):
+    """
+    Motor brings together a stepper motor and a sensor.
+    The stepper abstraction requires the function: onestep(direction: int) -> None
+    The sensor abstraction requires the function: sensing() -> bool
+    Motor offer two primitives:
+    (1) scan to seek the reference position in one direction
+    (2) take_steps to move forward or backward a number of steps
+    """
+
+    def __init__(self, stepper, sensor, sleep=0, max_steps=None):
         self.stepper = stepper
         self.sensor = sensor
         self.sleep = sleep
+        self.max_steps = max_steps
         self.steps = 0
-        self.abs_steps = 0
 
     def _sleep(self):
         time.sleep(self.sleep)
 
+    def _check_max_steps(self):
+        """
+        This is a safeguard to ensure that tethered motors do not exceed max rotation.
+        """
+        if self.max_steps:
+            if abs(self.steps) >= self.max_steps:
+                raise ValueError(f'max steps reached, steps={self.steps}')
+
     def _onestep(self, forward):
+        self._check_max_steps()
         self.stepper.onestep(direction=FORWARD if forward else BACKWARD)
         self.steps += 1 if forward else -1
-        self.abs_steps += 1
         self._sleep()
 
     def take_steps(self, forward, steps):
@@ -75,7 +92,14 @@ class Motor:
         if not found:
             return False, all_steps
 
-        half = int(steps / 2)
+        # 012345678
+        # ---@@@---
+        #          <--- scan back this way
+        #      ^ beginning of sensing region pos=5
+        #   ^ beyond sensing region pos=2, steps=3
+        #    ^ one step to beginning of sensing region pos=3
+        #     ^ add floor(steps/2)=1, result pos=4
+        half = 1 + int((steps - 1) / 2) # subtract terminal step off of sensing region
         self.take_steps(not forward, half)
         all_steps.append(-half)
         return True, all_steps
