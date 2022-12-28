@@ -6,9 +6,9 @@ import time
 from adafruit_motorkit import MotorKit
 
 import earth
-import hall_effect
 import model
 import motor
+import sensor
 
 logger = logging.getLogger(__name__)
 
@@ -39,9 +39,9 @@ def main():
     kit = MotorKit()
     kit2 = MotorKit(address=0x61)
 
-    eo_motor = motor.Motor(kit.stepper1, hall_effect.Sensor(17), SLEEP, STEPS_PER_REV)
-    er_motor = motor.Motor(kit.stepper2, hall_effect.Sensor(27), SLEEP)
-    mo_motor = motor.Motor(kit2.stepper1, hall_effect.Sensor(23), SLEEP)
+    eo_motor = motor.Motor(kit.stepper1, sensor.Sensor(17), SLEEP, STEPS_PER_REV)
+    er_motor = motor.Motor(kit.stepper2, sensor.Sensor(27), SLEEP)
+    mo_motor = motor.Motor(kit2.stepper1, sensor.Sensor(23), SLEEP)
 
     atexit.register(turn_off_motors, [kit.stepper1, kit.stepper2, kit2.stepper1])
 
