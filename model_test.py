@@ -34,15 +34,15 @@ class TestModel(unittest.TestCase):
         em.next(Earth(90, 30, 60))
         self.assertEqual(-100 - 90, eo_motor.steps)
         self.assertEqual(160 + 90 + 30, er_motor.steps)
-        self.assertEqual(60 + 90 + 60, mo_motor.steps)
+        self.assertEqual(60 - 90 - 60, mo_motor.steps)
         em.next(Earth(95, 40, 80))  # +5, +10, +20
         self.assertEqual(-100 - 90 - 5, eo_motor.steps)
         self.assertEqual(160 + 90 + 30 + 5 + 10, er_motor.steps)
-        self.assertEqual(60 + 90 + 60 + 5 + 20, mo_motor.steps)
+        self.assertEqual(60 - 90 - 60 - 5 - 20, mo_motor.steps)
         em.next(Earth(190, 40, 80))  # 190 maps to 170, +265 steps
         self.assertEqual(-100 - 90 - 5 + 265, eo_motor.steps)
         self.assertEqual(160 + 90 + 30 + 5 + 10 + 95, er_motor.steps)  # fewest reverse steps +95
-        self.assertEqual(60 + 90 + 60 + 5 + 20 + 95, mo_motor.steps)
+        self.assertEqual(60 - 90 - 60 - 5 - 20 + 265, mo_motor.steps)
 
     def test_multi_scan(self):
         sensor_range = [(350, 360), (0, 10)]
@@ -61,6 +61,6 @@ class TestModel(unittest.TestCase):
         em.next(Earth(25, 0, 330))
         self.assertEqual(160 - 25, eo_motor.steps)
         self.assertEqual(25, er_motor.steps)
-        self.assertEqual(5 + 25 - 30, mo_motor.steps)  # shortest path for +330 is -30
+        self.assertEqual(5 - 25 + 30, mo_motor.steps)  # shortest path for +330 is -30
         em.next(Earth(25, 0, 5))
-        self.assertEqual(5 + 25 - 30 + 35, mo_motor.steps)
+        self.assertEqual(5 - 25 + 30 - 35, mo_motor.steps)

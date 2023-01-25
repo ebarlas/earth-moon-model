@@ -111,7 +111,7 @@ class Model:
 
         self.eo_motor.take_steps(*dir_steps)
         self.er_motor.take_steps(*rev_steps)
-        self.mo_motor.take_steps(*rev_steps)
+        self.mo_motor.take_steps(*dir_steps) # since motor is inverted, this is effectively in reverse
         self.logger.info(f'op=eo_init, fwd={dir_steps[0]}, delta={dir_steps[1]}')
 
         er_fewest = self._fewest_steps(True, er_floor)
@@ -119,7 +119,7 @@ class Model:
         self.logger.info(f'op=er_init, fwd={er_fewest[0]}, steps={er_fewest[1]}')
 
         mo_fewest = self._fewest_steps(True, mo_floor)
-        self.mo_motor.take_steps(*mo_fewest)
+        self.mo_motor.take_steps(*self._reverse_steps(*mo_fewest))
         self.logger.info(f'op=mo_init, fwd={mo_fewest[0]}, steps={mo_fewest[1]}')
 
         self.steps = [eo_floor, er_floor, mo_floor]
@@ -140,7 +140,7 @@ class Model:
             rev_steps = self._reverse_steps(*dir_steps)
             self.eo_motor.take_steps(*dir_steps)
             self.er_motor.take_steps(*rev_steps)
-            self.mo_motor.take_steps(*rev_steps)
+            self.mo_motor.take_steps(*dir_steps)
             self.logger.info(f'op=eo_diff, fwd={dir_steps[0]}, delta={dir_steps[1]}')
 
         if er_floor != er_floor_last:
@@ -150,7 +150,7 @@ class Model:
 
         if mo_floor != mo_floor_last:
             delta = self._fewest_steps(True, self._wrap(mo_floor - mo_floor_last))
-            self.mo_motor.take_steps(*delta)
+            self.mo_motor.take_steps(*self._reverse_steps(*delta))
             self.logger.info(f'op=mo_diff, fwd={delta[0]}, delta={delta[1]}')
 
         self.steps = [eo_floor, er_floor, mo_floor]
