@@ -14,7 +14,7 @@ A video of the final assembled model is available on [YouTube](https://youtu.be/
 The image on the left is a rendering of EMM. The design source is
 freely available on [TinkerCAD](https://www.tinkercad.com/things/2K7GgXmbFCp).
 
-The image on the right illustrates the perspective of the EMM observer.
+The image below illustrates the perspective of the EMM observer.
 The observer follows the Earth as it travels around the Sun, with the Sun always
 due west of the observer.
 
