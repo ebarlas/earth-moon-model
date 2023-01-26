@@ -42,7 +42,7 @@ class TestModel(unittest.TestCase):
         em.next(Earth(190, 40, 80))  # 190 maps to 170, +265 steps
         self.assertEqual(-100 - 90 - 5 + 265, eo_motor.steps)
         self.assertEqual(160 + 90 + 30 + 5 + 10 + 95, er_motor.steps)  # fewest reverse steps +95
-        self.assertEqual(60 - 90 - 60 - 5 - 20 + 265, mo_motor.steps)
+        self.assertEqual(60 - 90 - 60 - 5 - 20 - 95, mo_motor.steps)
 
     def test_multi_scan(self):
         sensor_range = [(350, 360), (0, 10)]
