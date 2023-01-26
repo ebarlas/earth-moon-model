@@ -16,9 +16,13 @@ The image on the right illustrates the perspective of the EMM observer.
 The observer follows the Earth as it travels around the Sun, with the Sun always
 due west of the observer.
 
-| Model | Model Perspective                 |
-|----------------|-----------------------------------|
-| ![](img/earth-moon-model-annotated.png) | ![](img/earth-model-camera-2.png) |
+| CAD Model                               | Assembled Model          |
+|-----------------------------------------|--------------------------|
+| ![](img/earth-moon-model-annotated.png) | ![](img/earth-model.jpg) |
+
+| Model Perspective                 |
+|-----------------------------------|
+| ![](img/earth-model-camera-2.png) |
 
 ## Parts
 
@@ -149,3 +153,5 @@ The incredible Lance Barlas constructed wood components based on the 3D model ab
 | ![](img/wood_arm_1.jpg)     | ![](img/wood_arm_2.jpg)     |
 | ![](img/wood_support_1.jpg) | ![](img/wood_support_2.jpg) |
 | ![](img/wood_support_3.jpg) | ![](img/wood_support_4.jpg) |
+| ![](img/screw-down.jpeg)    | ![](img/sensor.jpeg)        |
+| ![](img/model-base.jpeg)    |                             |
