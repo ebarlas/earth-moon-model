@@ -5,7 +5,9 @@ computer with sensors and actuators to create a realistic model of the Earth and
 the Moon in their orbits.
 
 This project is an extension to [Earth Model](https://github.com/ebarlas/earth-model), 
-which has a much simpler footprint that lacks a moon. 
+which has a much simpler footprint that lacks a moon.
+
+A video of the final assembled model is available on [YouTube](https://youtu.be/LBm290BIcKk).
 
 ## Design
 
@@ -130,6 +132,10 @@ kit2.stepper1.onestep() # engage 3rd motor
 * Test module `motor_test.py`
 * Defines `Motor` class
 
+`steps.py`
+* Defines `Steps` class that eases arithmetic and normalization of motor steps
+* Used by `Model`
+
 `model.py`
 * Governs trio of motors in coordination
 * Includes awareness that earth-rotation and moon-orbit motors are mounted on earth-orbit motor
@@ -142,7 +148,26 @@ kit2.stepper1.onestep() # engage 3rd motor
 * Does the following:
   * Moves motor shafts to reference positions
   * Moves motor shafts to target position based on earth and moon positions
-  * Check positions minutely, moving motor shafts as needed 
+  * Check positions minutely, moving motor shafts as needed
+
+`time_warp.py`
+* Application that demonstrates model capabilities
+* Goes to the reference position on startup
+* Subsequently waits for ISO-formatted date entries on standard input
+* Model will adjust to reflect each entry in turn
+
+The following entries were submitted for the [demo video](https://youtu.be/LBm290BIcKk) linked above.
+
+```text
+2022-06-21T09:13:51+00:00
+2022-09-23T01:03:42+00:00
+2022-12-21T21:48:13+00:00
+2022-12-22T00:54:17+00:00
+2022-12-22T15:21:57+00:00
+2022-12-23T10:16:53+00:00
+2023-01-06T23:07:54+00:00
+2023-05-05T17:22:54+00:00
+```
 
 ## Wood Working
 
