@@ -4,8 +4,14 @@ Earth Moon Model (EMM) is a tabletop digital art project that combines a Raspber
 computer with sensors and actuators to create a realistic model of the Earth and
 the Moon in their orbits.
 
-This project is an extension to [Earth Model](https://github.com/ebarlas/earth-model), 
-which has a much simpler footprint that lacks a moon.
+EMM can orient the Earth in its orbit and rotation and the Moon in its orbit
+at any target date-time. In normal operating mode (`main.py`), EMM is a timepiece
+that reflects the positions of the Earth and Moon at the present clock time. EMM can also
+operate in a demonstrate mode (`time_warp.py`) that accepts ISO-date time entries in
+standard input and adjusts Earth and Moon positions to reflect them.
+
+EMM utilizes [Skyfield](https://rhodesmill.org/skyfield/) library for all astronomical calculations
+and [Adafruit CircuitPython Motor Kit](https://github.com/adafruit/Adafruit_CircuitPython_MotorKit) library for stepper motor controls. 
 
 A video of the final assembled model is available on [YouTube](https://youtu.be/LBm290BIcKk).
 
